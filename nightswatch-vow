@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+[ ! -z "$(pidof swaylock)" ] && exit
+mkdir -p ~/.local/tmp/nightswatch
+cd ~/.local/tmp/nightswatch
+touch .onpatrol
+ps x -o user,command | tee last.ps
+LOGS_SUM="whitewalkers.$(date +'%Y%m%d%H%M%S')"
+cat last.ps > "$LOGS_SUM"
+telegram-send "@pedrohlc You're on patrol"
+while [ -f .onpatrol ]; do
+	sleep 3
+	ps x -o user,command > now.ps
+	SYS_MVS=$(diff -u last.ps now.ps)
+	echo "$SYS_MVS" | tee -a "$LOGS_SUM"
+	if [ ! -z "$SYS_MVS" ]; then
+		echo "$SYS_MVS" | telegram-send --stdin --pre --disable-web-page-preview
+	fi
+	mv -f now.ps last.ps
+done
+telegram-send "@pedrohlc You're watch has ended"

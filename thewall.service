@@ -1,0 +1,8 @@
+[Unit]
+Description=Keeps the white walkers in look
+
+[Service]
+ExecStart=/home/pedrohlc/.local/bin/bluefence.py
+
+[Install]
+WantedBy=default.target
