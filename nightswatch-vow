@@ -8,13 +8,13 @@ LOGS_SUM="whitewalkers.$(date +'%Y%m%d%H%M%S')"
 cat last.ps > "$LOGS_SUM"
 telegram-send "@pedrohlc You're on patrol"
 while [ -f .onpatrol ]; do
-	sleep 3
+	sleep 1
 	ps x -o user,command > now.ps
-	SYS_MVS=$(diff -u last.ps now.ps)
+	SYS_MVS=$(diff -u last.ps now.ps | grep '^[\+\-][^\+\-]')
 	echo "$SYS_MVS" | tee -a "$LOGS_SUM"
 	if [ ! -z "$SYS_MVS" ]; then
 		echo "$SYS_MVS" | telegram-send --stdin --pre --disable-web-page-preview
 	fi
 	mv -f now.ps last.ps
 done
-telegram-send "@pedrohlc You're watch has ended"
+telegram-send "You're watch has ended"
